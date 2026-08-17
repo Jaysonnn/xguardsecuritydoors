@@ -1,0 +1,88 @@
+.media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* No backdrop-filter or filter anywhere in here: either would create a
+     containing block and unpin the fixed call bar. */
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+/* Fades in over the poster once the first frame is decodable, so there is no
+   hard cut. */
+.video[data-ready="true"] {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .video {
+    transition: none;
+  }
+}
+
+/* Directional: heavy behind the left-hand text column, light over the footage
+   on the right so the door stays visible. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    var(--scrim-strong) 0%,
+    rgba(10, 10, 12, 0.78) 42%,
+    var(--scrim-soft) 100%
+  );
+}
+
+/* Dissolves the hero into the next section, which doubles as a scroll cue. */
+.fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, var(--ink) 100%);
+}
+
+@media (max-width: 899.98px) {
+  /* No video at this width, and the text spans the full column, so the scrim
+     flattens to near solid. */
+  .scrim {
+    background: rgba(10, 10, 12, 0.86);
+  }
+}
+
+.scrollCue {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--steel-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+}
+.scrollCue:hover {
+  color: #fff;
+}
+.scrollCue:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scrollCue span {
+    animation: bob 2s ease-in-out infinite;
+  }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}

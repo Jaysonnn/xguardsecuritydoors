@@ -1,0 +1,283 @@
+/* XGuard brand system, taken from the logo: black badge, signal red, steel white.
+ *
+ * Breakpoint convention: one breakpoint at 900px for the whole site.
+ * Shared rules in this file are mobile-first (min-width). New components ship
+ * their own CSS Module authored desktop-first (base = desktop, one max-width
+ * block collapses it). Both meet at 900px so the site behaves as one system. */
+
+:root {
+  --ink: #0a0a0c;          /* near-black background (logo badge) */
+  --ink-raised: #141418;   /* cards / raised surfaces */
+  --line: #26262c;         /* hairline borders */
+  --red: #e4002b;          /* logo signal red, CTAs only */
+  --red-press: #b80023;
+  --steel: #f5f6f8;        /* primary text on dark */
+  --steel-dim: #b7bac2;    /* secondary text, 7:1+ on --ink */
+  --gold: #ffb400;         /* star ratings / urgency accents */
+  --radius: 14px;
+  --shell: min(100% - 2.5rem, 72rem);
+
+  --header-h: 72px;        /* 60px below 900px, see SiteHeader.module.css */
+  --tile-ratio: 4 / 5;     /* one knob retunes every gallery tile */
+  --z-callbar: 50;
+  --z-header: 60;
+  --z-menu: 70;            /* the lightbox uses <dialog> top layer, no z-index */
+  --scrim-strong: rgba(10, 10, 12, 0.92);
+  --scrim-soft: rgba(10, 10, 12, 0.35);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  /* Keeps anchor targets clear of the sticky header */
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* Visible only when focused. Required once the site has navigation. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--red);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  border-radius: 0 0 var(--radius) 0;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+body {
+  background: var(--ink);
+  color: var(--steel);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell { width: var(--shell); margin-inline: auto; }
+
+h1, h2, h3 { line-height: 1.15; letter-spacing: -0.02em; }
+
+a { color: inherit; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 0.95rem 1.6rem;
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+  min-height: 52px; /* thumb-sized tap target */
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--red); color: #fff; }
+.btn-primary:hover { background: var(--red-press); }
+.btn-ghost { border-color: var(--steel); color: var(--steel); background: transparent; }
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.08); }
+.btn-block { width: 100%; }
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* svh, not vh: avoids the jump when the mobile URL bar collapses. 88% leaves
+     the next section peeking above the fold, which is the strongest scroll cue
+     available. */
+  min-height: 88svh;
+  padding: 4.5rem 0 4.5rem;
+  background: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+/* Sits above the video and scrim layers */
+.hero-content {
+  position: relative;
+  z-index: 3;
+}
+/* Brand tint, kept from the pre-video design */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    1200px 500px at 80% -10%,
+    rgba(228, 0, 43, 0.18),
+    transparent 60%
+  );
+}
+.hero-kicker {
+  display: inline-block;
+  background: rgba(228, 0, 43, 0.15);
+  color: #ff5c77;
+  border: 1px solid rgba(228, 0, 43, 0.4);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  margin-bottom: 1.2rem;
+}
+.hero h1 { font-size: clamp(2rem, 6vw, 3.6rem); font-weight: 800; }
+.hero h1 .accent { color: var(--red); }
+.hero-sub { color: var(--steel-dim); font-size: 1.15rem; margin: 1.2rem 0 2rem; max-width: 40rem; }
+.hero-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 1.4rem;
+}
+.hero-ctas { display: flex; flex-direction: column; gap: 0.8rem; }
+@media (min-width: 640px) { .hero-ctas { flex-direction: row; } }
+
+/* ---------- Trust badges ---------- */
+.badges {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin-top: 2.4rem;
+}
+@media (min-width: 768px) { .badges { grid-template-columns: repeat(4, 1fr); } }
+.badge {
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.badge .tick { color: var(--gold); }
+
+/* ---------- Sections ---------- */
+section { padding: 3.5rem 0; }
+.section-title { font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 0.6rem; }
+.section-sub { color: var(--steel-dim); margin-bottom: 2rem; max-width: 44rem; }
+
+/* ---------- Steps ---------- */
+.steps { display: grid; gap: 1rem; }
+@media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+.step {
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+}
+.step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+}
+
+/* ---------- Service areas ---------- */
+.areas { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+.area {
+  border: 1px solid var(--line);
+  background: var(--ink-raised);
+  border-radius: 999px;
+  padding: 0.4rem 0.95rem;
+  font-size: 0.9rem;
+  color: var(--steel-dim);
+}
+
+/* ---------- Booking form ---------- */
+.form-card {
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 4px);
+  padding: 1.6rem;
+  max-width: 34rem;
+}
+.form-progress { display: flex; gap: 0.4rem; margin-bottom: 1.4rem; }
+.form-progress span {
+  height: 5px; flex: 1; border-radius: 99px; background: var(--line);
+}
+.form-progress span.on { background: var(--red); }
+.field { margin-bottom: 1.1rem; }
+.field label { display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.35rem; }
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--ink);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  color: var(--steel);
+  font-size: 1rem;
+  padding: 0.8rem 0.9rem;
+  min-height: 48px;
+}
+.field textarea { min-height: 110px; resize: vertical; }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 1px;
+}
+.field-error { color: #ff8095; font-size: 0.85rem; margin-top: 0.3rem; }
+.form-nav { display: flex; gap: 0.7rem; margin-top: 1.2rem; }
+.form-success {
+  border: 1px solid rgba(80, 200, 120, 0.5);
+  background: rgba(80, 200, 120, 0.1);
+  color: #7ee2a0;
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+}
+.honeypot { position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden; }
+
+/* ---------- Floating call bar (mobile) ---------- */
+.call-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border-top: 1px solid var(--line);
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.call-bar a {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 1rem; font-weight: 800; text-decoration: none; font-size: 1rem;
+}
+.call-bar .call { background: var(--red); color: #fff; }
+.call-bar .sms { background: var(--ink-raised); color: var(--steel); }
+@media (min-width: 900px) { .call-bar { display: none; } }
+body { padding-bottom: 72px; }
+@media (min-width: 900px) { body { padding-bottom: 0; } }
+
+/* ---------- Footer ---------- */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 2.5rem 0 3rem;
+  color: var(--steel-dim);
+  font-size: 0.9rem;
+}

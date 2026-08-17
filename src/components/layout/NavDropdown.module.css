@@ -1,0 +1,116 @@
+/* Desktop-first. The single max-width block at the bottom collapses it. */
+
+.wrapper {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: var(--steel);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+.trigger:hover {
+  color: #fff;
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.chevron,
+.chevronOpen {
+  transition: transform 160ms ease;
+}
+.chevronOpen {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chevron,
+  .chevronOpen {
+    transition: none;
+  }
+}
+
+/* Absolutely positioned so opening never reflows the header. */
+.panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  translate: -50% 0;
+  min-width: 15rem;
+  list-style: none;
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.4rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+
+  /* visibility, not just opacity, so hidden links leave the tab order */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms;
+}
+.panel[data-open="true"] {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+}
+
+.panel a {
+  display: block;
+  padding: 0.6rem 0.85rem;
+  border-radius: 9px;
+  text-decoration: none;
+  color: var(--steel-dim);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.panel a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.panel a:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+  color: #fff;
+}
+
+/* Inside the mobile panel the dropdown is always expanded and inline. */
+@media (max-width: 899.98px) {
+  .trigger {
+    display: none;
+  }
+  .panel {
+    position: static;
+    translate: none;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    box-shadow: none;
+    border: none;
+    background: none;
+    padding: 0;
+    min-width: 0;
+  }
+  .panel a {
+    font-size: 1.1rem;
+    padding: 0.7rem 0;
+  }
+}

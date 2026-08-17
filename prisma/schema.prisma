@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BookingStatus {
+  NEW
+  CONTACTED
+  QUOTED
+  BOOKED
+  COMPLETED
+  CANCELLED
+  SPAM
+}
+
+enum ServiceType {
+  DESIGN_DOOR
+  DIAMOND_DOOR
+  DOUBLE_DOOR
+  PERFORATED_MESH
+  PRIVACY_MESH_DOOR
+  ROLLER_SHUTTER
+  SLIDING_DOOR
+  STAINLESS_STEEL_DOOR
+  WINDOW_GRILLE
+  FLY_SCREEN
+  REPAIR
+  OTHER
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  service     ServiceType
+  name        String        @db.VarChar(100)
+  phone       String        @db.VarChar(20)
+  email       String?       @db.VarChar(254)
+  suburb      String        @db.VarChar(80)
+  postcode    String        @db.VarChar(4)
+  message     String?       @db.VarChar(1000)
+  preferredAt DateTime?
+  status      BookingStatus @default(NEW)
+  // Abuse forensics — IP + UA are logged for spam triage, retained 90 days max
+  ipHash      String        @db.VarChar(64)
+  userAgent   String?       @db.VarChar(255)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+
+  @@index([status, createdAt])
+  @@index([ipHash, createdAt])
+}
+
+model Customer {
+  id                 String    @id @default(cuid())
+  email              String    @unique @db.VarChar(254)
+  name               String    @db.VarChar(100)
+  // Set true only by an admin after a completed installation — gates review rights
+  isVerifiedCustomer Boolean   @default(false) @map("is_verified_customer")
+  createdAt          DateTime  @default(now())
+  bookings           Booking[]
+  reviews            Review[]
+}
+
+enum ReviewStatus {
+  PENDING_MODERATION
+  APPROVED
+  REJECTED
+}
+
+model Review {
+  id         String       @id @default(cuid())
+  rating     Int          @db.SmallInt // 1..5, enforced in Zod + CHECK constraint via migration
+  title      String       @db.VarChar(120)
+  body       String       @db.VarChar(2000)
+  suburb     String?      @db.VarChar(80)
+  status     ReviewStatus @default(PENDING_MODERATION)
+  // Anti-abuse: IP logged, one review per customer per 30 days enforced in API
+  ipHash     String       @db.VarChar(64)
+  createdAt  DateTime     @default(now())
+  moderatedAt DateTime?
+  moderatedBy String?     @db.VarChar(100)
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+
+  @@index([status, createdAt])
+  @@index([customerId, createdAt])
+}

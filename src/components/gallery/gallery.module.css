@@ -1,0 +1,206 @@
+/* auto-fill with a min() guard: a bare minmax(15rem, 1fr) overflows below 240px */
+.grid {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+
+/* The container owns the ratio, so the box is reserved before any bytes arrive.
+   That is what keeps layout shift at zero across mixed portrait and landscape
+   sources. */
+.tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--tile-ratio);
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--ink-raised);
+  padding: 0;
+  cursor: zoom-in;
+}
+.tile img {
+  transition: transform 300ms ease;
+}
+.tile:hover img {
+  transform: scale(1.04);
+}
+.tile:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile img {
+    transition: none;
+  }
+  .tile:hover img {
+    transform: none;
+  }
+}
+
+/* ---------- Category cards ---------- */
+
+.categoryGrid {
+  list-style: none;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--ink-raised);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.card:hover {
+  border-color: var(--red);
+  transform: translateY(-3px);
+}
+.card:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  .card:hover {
+    transform: none;
+  }
+}
+
+.cardImage {
+  position: relative;
+  aspect-ratio: var(--tile-ratio);
+  background: var(--ink);
+}
+.cardBody {
+  padding: 1rem 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+.cardTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.cardBlurb {
+  color: var(--steel-dim);
+  font-size: 0.92rem;
+}
+.cardBest {
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+.cardCount {
+  color: #7c7f88;
+  font-size: 0.8rem;
+}
+
+/* ---------- Lightbox ---------- */
+
+.dialog {
+  border: none;
+  background: transparent;
+  padding: 0;
+  max-width: 100vw;
+  max-height: 100vh;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.dialogInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 3.5rem 1rem;
+}
+
+.dialogImage {
+  max-width: min(92vw, 1100px);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.counter {
+  position: absolute;
+  top: 1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--steel-dim);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.navButton,
+.closeButton {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(20, 20, 24, 0.9);
+  color: var(--steel);
+  cursor: pointer;
+}
+.navButton:hover,
+.closeButton:hover {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+.navButton:focus-visible,
+.closeButton:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+
+.prev {
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.next {
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.closeButton {
+  top: 1rem;
+  right: 1rem;
+}
+
+@media (max-width: 899.98px) {
+  .prev {
+    left: 0.5rem;
+  }
+  .next {
+    right: 0.5rem;
+  }
+  .dialogInner {
+    padding: 4rem 0.5rem;
+  }
+}
